@@ -1,0 +1,105 @@
+\title{Rank Effect and Individual Investors' Buying Decisions}
+% \author{}
+\date{\today}
+
+% classes
+\documentclass[12pt]{article}
+
+\usepackage{todonotes}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{graphicx}                           % Package to allow inclusion of graphics
+% line spacing
+\usepackage[onehalfspacing]{setspace}
+\usepackage{booktabs}
+
+\usepackage{rotating}
+
+
+
+% define bibliography
+\usepackage[backend=bibtex,style=authoryear,natbib=true,giveninits=true]{biblatex} % bibtex settings
+\addbibresource{lit.bib}
+
+
+\usepackage{geometry}
+\geometry{a4paper,left=10mm,right=10mm, top=1cm, bottom=2cm}
+
+\begin{document}
+\maketitle
+
+% \paragraph{Abstract}
+% This can be used as a short abstract.
+
+\section{Introduction}
+
+\begin{figure}[h]
+	\includegraphics[scale=0.7]{figure_probtopup_1dayreturn}
+	\centering
+	\caption{Probability of topping up on each percentile of 1-day return}
+\end{figure}
+
+\begin{figure}[h]
+	\includegraphics[scale=0.7]{figure_probtopup_1dayreturnrank}
+	\centering
+	\caption{Probability of topping up on 1-day return rank}
+\end{figure}
+
+
+\newpage
+
+\section{Summary statistics}
+
+ \subsection{Account level information}
+ 
+\input{table_account_summary.tex}
+ 
+ \subsection{Holding level information}
+
+\input{table_holding_summary.tex}
+
+Daniel Stewart Securities increased from \pounds0.00200 to \pounds0.01700 (increased by $750\%$) from 30/March/2015 to 31/March/2015.
+
+\newpage
+
+\section{Top up decisions}
+
+	
+\input{table_reg_topup.tex}
+
+\input{table_reg_topup2.tex}
+
+\begin{sidewaystable}
+	\centering
+	\small
+	\caption{Subsample analysis: break by median house price}
+	\begin{tabular}{ll}
+\input{table_reg_houseprice.tex}
+	\end{tabular}
+\end{sidewaystable}
+	
+
+
+
+
+\newpage
+
+\section{Extention: first buy}
+
+\input{table_reg_first_buy_buyday_30day.tex}
+
+\input{table_reg_first_buy_buyday_60day.tex}
+
+\input{table_reg_first_buy_buyday_90day.tex}
+
+\newpage
+
+\section{Conclusion}
+Here is a conclusion \citep{hartzmark2015worst}.
+
+% makes automatic header
+\printbibliography
+
+
+\end{document}
+
+  

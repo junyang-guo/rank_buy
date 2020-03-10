@@ -1,0 +1,49 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{nyt/global//global/global}
+  \entry{hartzmark2015worst}{article}{}
+    \name{author}{1}{}{%
+      {{hash=HSM}{%
+         family={Hartzmark},
+         familyi={H\bibinitperiod},
+         given={Samuel\bibnamedelima M},
+         giveni={S\bibinitperiod\bibinitdelim M\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Oxford University Press}%
+    }
+    \strng{namehash}{HSM1}
+    \strng{fullhash}{HSM1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelyear}{2015}
+    \field{labeldatesource}{}
+    \field{sortinit}{H}
+    \field{sortinithash}{H}
+    \field{number}{4}
+    \field{pages}{1024\bibrangedash 1059}
+    \field{title}{The worst, the best, ignoring all the rest: The rank effect
+  and trading behavior}
+    \field{volume}{28}
+    \field{journaltitle}{The Review of Financial Studies}
+    \field{year}{2015}
+  \endentry
+\enddatalist
+\endinput
