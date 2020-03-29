@@ -1,0 +1,689 @@
+---
+title: "analysis_buyday_accountfe"
+author: "Junyang"
+date: "28/02/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all=TRUE))
+library(data.table)
+library(stargazer)
+library(lfe)
+memory.limit(size=10000000)
+memory.limit()
+Sys.setenv(LANG="en")
+Sys.setlocale("LC_TIME","us")
+```
+
+```{r}
+load("G:/rank/intermdiate_data/dt_portfolio/data_trasactdays_rank_v2.RData")
+data <- copy(data_new)
+rm(data_new)
+names(data)
+# [1] "anon"                  "port_date"             "sedol"                 "net.posit"            
+# [5] "qwapp"                 "last_td"               "first_purchase"        "buys"                 
+# [9] "starting.date"         "holding_length"        "sells"                 "buyday"               
+# [13] "sellday"               "transact"              "upp"                   "pp"                   
+# [17] "price_1"               "price_2"               "price_4"               "price_6"              
+# [21] "return_1day"           "return_3day"           "return_1week"          "return_since_purchase"
+# [25] "problematic_entry"     "problematic_port"      "no.in.portfolio"       "real.rank.rsp"        
+# [29] "real.rank.r1day"       "real.rank.r3day"       "real.rank.r1week"      "log_in_times" 
+# [33] "rank_rsp_to_rsp"       "rank_r1day_in_rsp"     "rank_r3day_in_rsp"     "rank_r1week_in_rsp"
+check<- data[(net.posit<0)]
+anon_negative_holding <- unique(check$anon)
+data <- data[!(anon %in% anon_negative_holding)]
+check1 <- data[return_since_purchase>10]
+check2 <- data[return_1day>10]
+check3 <- data[return_3day>10]
+check4 <- data[return_1week>10]
+
+outlier_sedol <- unique(c(check1$sedol,check2$sedol,check3$sedol,check4$sedol))
+data[,check:=ifelse(sedol %in% outlier_sedol,1,0)]
+data[,problematic_port:=sum(problematic_entry+check),by=c("anon","port_date")]
+
+nrow(data[problematic_port==0])
+# 1531967
+
+# delete portfolios with stocks without full return information
+data <- data[problematic_port==0]
+
+nrow(data[!is.na(log_in_times)])
+# 1531967
+# all transaction days are log_in days
+
+data[,holding_value:=net.posit*upp]
+data[,portfolio_value:=sum(holding_value),by=c("port_date","anon")]
+data[,portfolio_return:=sum(return_since_purchase*holding_value/portfolio_value),by=c("port_date","anon")]
+
+# delete entries with 0 holdings (selling/disappear because of split/... all on the day)
+data <- data[!(is.na(portfolio_return))]
+nrow(data)
+# 1513961
+
+
+data <- data[first_purchase>1 & no.in.portfolio>=3]
+nrow(data)
+# 1278251
+
+data[,num.buys:=sum(buys),by="anon"]
+data <- data[num.buys>=2]
+
+nrow(data)
+# 1111928
+
+
+buydaydt1 <- copy(data)
+
+```
+
+
+# plot
+
+```{r}
+
+
+dt_topupanalysis <- copy(buydaydt1)
+  
+  #### 1) return
+
+qnt_100 <- quantile(dt_topupanalysis[,return_1day],seq(0,1,0.01),na.rm=TRUE)
+length(unique(qnt_100))
+bin_number_match <- data.table(number=unique(qnt_100)[3:(length(unique(qnt_100))-1)],hundred_bins_r1=cut(unique(qnt_100)[3:(length(unique(qnt_100))-1)],unique(qnt_100)[2:(length(unique(qnt_100))-1)]))
+dt_topupanalysis[,hundred_bins_r1:=cut(return_1day,unique(qnt_100),include.lowest = TRUE)]
+data_log_in_frequentbuysedol_short_1 <- dt_topupanalysis[,.(mean.top.up=mean(buys)), by = hundred_bins_r1]
+dt_topupanalysis[,hundred_bins_r1:=NULL]
+data_log_in_frequentbuysedol_short_1 <- merge(data_log_in_frequentbuysedol_short_1,bin_number_match,by="hundred_bins_r1",all.x=TRUE)
+ymax=max(data_log_in_frequentbuysedol_short_1[!(is.na(number))]$mean.top.up)
+
+g1 <- ggplot(data_log_in_frequentbuysedol_short_1,aes(x=number,y=mean.top.up))+geom_point()+geom_smooth()+ylim(0,ymax)+ theme_bw()+labs(x ="1-day return", y = "Probability of topping up")
+
+ggsave("probtopup_1dayreturn.png", width = 4, height = 4)
+
+#### 2) rank
+qnt_100 <- quantile(dt_topupanalysis[,rank_r1day_in_rsp],seq(0,1,0.01),na.rm=TRUE)
+length(unique(qnt_100))
+bin_number_match <- data.table(number=unique(qnt_100)[2:length(unique(qnt_100))],hundred_bins_rank=cut(unique(qnt_100)[2:length(unique(qnt_100))],unique(qnt_100),include.lowest = TRUE))
+dt_topupanalysis[,hundred_bins_rank:=cut(rank_r1day_in_rsp,unique(qnt_100),include.lowest = TRUE)]
+data_log_in_frequentbuysedol_short_1 <- dt_topupanalysis[,.(mean.top.up=mean(buys)), by = hundred_bins_rank]
+dt_topupanalysis[,hundred_bins_rank:=NULL]
+data_log_in_frequentbuysedol_short_1 <- merge(data_log_in_frequentbuysedol_short_1,bin_number_match,by="hundred_bins_rank")
+
+g2 <- ggplot(data_log_in_frequentbuysedol_short_1,aes(x=number,y=mean.top.up))+geom_point()+geom_smooth()+ theme_bw()+labs(x ="1-day return rank", y = "Probability of topping up")
+
+ggsave("probtopup_1dayreturnrank.png", width = 4, height = 4)
+
+
+```
+
+```{r}
+
+length(unique(buydaydt1$anon))
+#6654
+sample_anon <- unique(buydaydt1$anon)
+anon <- fread("D:/raw_data_September_2016/warwick_version--portfolios_201204-201604--id_mapping--with_customer_level_attributes_v2.csv")
+anon <- anon[anon_id %in% sample_anon]
+anon <- subset(anon,!duplicated(anon$anon_id))
+anon[,age:=2012-dob]
+anon_topup_rate <- buydaydt1[,.(top.up.rate=mean(buys)),by="anon"]
+setnames(anon_topup_rate,"anon","anon_id")
+anon_topup_rate<- subset(anon_topup_rate,!duplicated(anon$anon_id))
+anon <- merge(anon,anon_topup_rate,by="anon_id")
+smry <- anon[,.(age,top.up.rate)]
+
+# stargazer(smry, summary.stat=c("n","mean","sd","median"),type="html",out="account_summary.htm")
+
+nrow(anon[gender=="F"])
+#1046
+nrow(anon[gender=="M"])
+#4783
+
+
+
+# smry <- buydaydt1[,.(return_1day, rank_r1day_in_rsp,return_3day,rank_r3day_in_rsp,return_1week,rank_r1week_in_rsp,no.in.portfolio, portfolio_return, buys)]
+# stargazer(smry, summary.stat=c("n","mean","sd","min","p25","median","p75","max"),type="html",out="check2.htm")
+
+
+
+buydaydt1[,rank_r1day_sqr:=rank_r1day_in_rsp^2]
+buydaydt1[,rank_r3day_sqr:=rank_r3day_in_rsp^2]
+buydaydt1[,rank_r1week_sqr:=rank_r1week_in_rsp^2]
+buydaydt1[,rank_r1month_sqr:=rank_r1week_in_rsp^2]
+buydaydt1[,onedaybest:=ifelse(rank_r1day_in_rsp==1,1,0)]
+buydaydt1[,threedaybest:=ifelse(rank_r3day_in_rsp==1,1,0)]
+buydaydt1[,oneweekbest:=ifelse(rank_r1week_in_rsp==1,1,0)]
+buydaydt1[,onedayworst:=ifelse(rank_r1day_in_rsp==0,1,0)]
+buydaydt1[,threedayworst:=ifelse(rank_r3day_in_rsp==0,1,0)]
+buydaydt1[,oneweekworst:=ifelse(rank_r1week_in_rsp==0,1,0)]
+buydaydt1[,sedol_date:=paste0(sedol, port_date)]
+buydaydt1[,anon_date:=paste0(anon, port_date)]
+buydaydt1[,holding_day_sqrt:=sqrt(holding_length)]
+buydaydt1[,log_no.in.portfolio:=sqrt(no.in.portfolio)]
+
+return_1_quantile_buy_day <- quantile(unique(buydaydt1$return_1day),seq(0,1,0.1),na.rm = TRUE)
+buydaydt1[,return_1day_level_buy_day:=cut(return_1day,return_1_quantile_buy_day,include.lowest = TRUE)]
+return_1week_quantile_buy_day <- quantile(unique(buydaydt1$return_1week),seq(0,1,0.1),na.rm = TRUE)
+buydaydt1[,return_1week_level_buy_day:=cut(return_1week,return_1week_quantile_buy_day,include.lowest = TRUE)]
+return_3day_quantile_buy_day <- quantile(unique(buydaydt1$return_3day),seq(0,1,0.1),na.rm = TRUE)
+buydaydt1[,return_3day_level_buy_day:=cut(return_3day,return_3day_quantile_buy_day,include.lowest = TRUE)]
+
+
+fixed1 <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp |0 |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed2 <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp |anon +sedol_date + return_1day_level_buy_day |0| 
+                 anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed2.1 <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp |anon  |0| 
+                 anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed3 <- felm(buys ~  rank_r1day_in_rsp + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed4 <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp  +portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt|anon +sedol_date + return_1day_level_buy_day|0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed5 <- felm(buys ~   onedaybest + onedayworst  + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt + log_no.in.portfolio |anon +sedol_date + return_1day_level_buy_day  |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+
+
+fixed8 <-felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp |0 |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed9 <- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp |anon +sedol_date + return_3day_level_buy_day + anon_date |0| 
+                 anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed10 <- felm(buys ~   rank_r3day_in_rsp + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day|0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+fixed18.1 <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon_date +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1[!(portfolio_value.t_1<=0)& !(no.in.portfolio<5)],keepModel = FALSE)
+
+
+
+fixed15 <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp |0 |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+fixed16 <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp |anon +sedol_date + return_1week_level_buy_day |0| 
+                  anon+port_date, data=buydaydt1,keepModel = FALSE)
+fixed17 <- felm(buys ~   rank_r1week_in_rsp + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon_date +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed11 <- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed12 <- felm(buys ~   threedaybest + threedayworst + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+fixed18 <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed19 <- felm(buys ~   oneweekbest + oneweekworst + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt|anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+
+fixed4.1 <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon_date +sedol_date + return_1day_level_buy_day|0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed5.1 <- felm(buys ~   onedaybest + onedayworst +  return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt|anon_date +sedol_date + return_1day_level_buy_day  |0| anon+port_date, data=buydaydt1[ !(no.in.portfolio<10)],keepModel = FALSE)
+
+
+fixed11.1 <- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp +  return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon_date +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1[!(portfolio_value.t_1<=0)& !(no.in.portfolio<5)],keepModel = FALSE)
+
+fixed12.1 <- felm(buys ~   threedaybest + threedayworst +  return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt1|anon_date +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1[!(portfolio_value.t_1<=0)& !(no.in.portfolio<5)],keepModel = FALSE)
+
+
+
+
+fixed19.1 <- felm(buys ~   oneweekbest + oneweekworst + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt +log_portfolio_value.t_1+log_no_in_portfolio.t_1|anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1[!(portfolio_value.t_1<=0)& !(no.in.portfolio<5)],keepModel = FALSE)
+
+
+stargazer(fixed4, fixed4.1,  fixed5, fixed5.1, fixed11, fixed11.1,  fixed12, fixed12.1, fixed18, fixed18.1,  fixed19, fixed19.1, type="html",
+          dep.var.labels=c("Top Up"),
+          add.lines = list(c("Account FE",rep("Yes",12)),c("Stock*Date FE", rep("Yes",12)),c("Return decile FE", rep("Yes",12))),out="check.htm")
+
+
+stargazer(fixed1, fixed2,  fixed4, fixed5,  type="latex",order=c("^rank_return_1day_inrsp$","^rank_r1day_sqr$","^onedaybest$", "^onedayworst$",  "^portfolio_return$", "^return_since_purchase$", "^rank_rsp_to_rsp$", "^holding_day_sqrt$", "^return_since_purchase:holding_day_sqrt$"),
+          dep.var.labels=c("Top Up"),
+          add.lines = list(c("Account FE", c("No",rep("Yes",4))),c("Stock*Date FE", c("No",rep("Yes",4))),c("Return do",rep("Yes",4)))),star.cutoffs = c(0.05, 0.01, 0.005),out="topup.tex")ecile FE", c("N
+
+stargazer(fixed11, fixed12,  fixed18,fixed19, type="latex",order=c("^rank_return_3day_inrsp$", "^rank_r3day_sqr$","^threedaybest$", "^threedayworst$", "^rank_r1week_sqr$","^rank_return_1week_inrsp$","^oneweekbest$", "^oneweekworst$", "^portfolio_return$", "^return_since_purchase$", "^rank_rsp_to_rsp$", "^holding_day_sqrt$", "^return_since_purchase:holding_day_sqrt$"),
+          dep.var.labels=c("Top Up"),star.cutoffs = c(0.05, 0.01, 0.005),
+          add.lines = list(c("Controls",rep("Yes",4)),c("Account FE",rep("Yes",4)),c("Stock*Date FE",  rep("Yes",4)),c("Return decile FE",  rep("Yes",4))),out="topup2.tex")
+
+stargazer(fixed1, fixed2, fixed3, fixed4, fixed5, fixed8, fixed9, fixed10,fixed11, fixed12, fixed15, fixed16,fixed17, fixed18,fixed19, type="latex",order=c("^rank_return_1day_inrsp$","^rank_r1day_sqr$","^onedaybest$", "^onedayworst$", "^rank_r3day_sqr$","^rank_return_3day_inrsp$","^threedaybest$", "^threedayworst$", "^rank_r1week_sqr$","^rank_return_1week_inrsp$","^oneweekbest$", "^oneweekworst$", "^portfolio_return$", "^return_since_purchase$", "^rank_rsp_to_rsp$", "^holding_day_sqrt$", "^return_since_purchase:holding_day_sqrt$"),
+          dep.var.labels=c("Top Up"),
+          add.lines = list(c("Account FE", rep("Yes",15)),c("Stock*Date FE", rep("Yes",15)),c("Return decile FE", rep("Yes",15))),out="topup.tex")
+
+```
+
+
+
+# socio-economic factors 
+
+```{r}
+area_code <- fread("G:/rank/socio-economic/NSPL_AUG_2011.csv")
+setnames(area_code,c("PCD","PCD2","PCDS","DOINTR","DOTERM","USERTYPE","OSEAST1M","OSNRTH1M","OSGRDIND","OACODE","CTY","LAUA","WARD","HLTHAU", "HRO", "CTRY", "GOR", "PCON", "EER", "TECLEC", "TTWA", "PCT", "NUTS", "PARK", "SOA1", "SOA2","DZONE1","DZONE2","SOA1NI", "URINDEW", "URINDSC", "URINDNI", "OAC"))
+area_code[, postcode:=substring(PCD,1,2)]
+
+# median house price
+
+house_price <- fread("G:/rank/socio-economic/median_house_price.csv",header = TRUE)
+house_price <- house_price[,.(LAUA, Mar_2011, Jun_2011, Sep_2011, Dec_2011)]
+area_code <- merge(area_code,house_price,by="LAUA",all.x=TRUE)
+
+area_code_house_price <- area_code[!is.na(Dec_2011)]
+area_code_house_price <- area_code_house_price[,.(mean_house_price=mean(Dec_2011),
+                                                  median_house_price=median(Dec_2011)),
+                                               by=postcode]
+
+#jobless claimant
+claimant <- fread("G:/rank/socio-economic/claimant.csv",header = TRUE)
+claimant <- claimant[,.(LAUA,claimant_percentage)]
+claimant[,claimant_percentage:=as.numeric(claimant_percentage)]
+claimant <- claimant[!is.na(claimant_percentage)]
+area_code <- merge(area_code,claimant,by="LAUA",all.x=TRUE)
+
+area_code_claimant <- area_code[!is.na(claimant_percentage)]
+area_code_claimant <- area_code_claimant[,.(mean_claimant=mean(claimant_percentage),
+                                                  median_claimant=median(claimant_percentage)),
+                                               by=postcode]
+
+
+#qualification
+
+qualification <- fread("G:/rank/socio-economic/qualification.csv",header = TRUE)
+qualification[,high_prop:=level_4/population]
+qualification <- qualification[,.(LAUA,high_prop)]
+area_code <- merge(area_code,qualification,by="LAUA",all.x=TRUE)
+setnames(area_code,"high_prop","high_qualif_prop")
+
+area_code_qualification <- area_code[!is.na(high_qualif_prop)]
+area_code_qualification <- area_code_qualification[,.(mean_qualification=mean(high_qualif_prop),
+                                                  median_qualification=median(high_qualif_prop)),
+                                               by=postcode]
+
+#free_meal
+
+freemeal <- fread("G:/rank/socio-economic/freeschoolmeal.csv",header = TRUE)
+area_code <- merge(area_code,freemeal,by="LAUA",all.x=TRUE)
+
+area_code_freemeal <- area_code[!is.na(freemealprop)]
+area_code_freemeal <- area_code_freemeal[,.(mean_freemeal=mean(freemealprop),
+                                                  median_freemeal=median(freemealprop)),
+                                               by=postcode]
+
+#weekly_pay
+pay <- fread("G:/rank/socio-economic/weekly_pay.csv",header = TRUE)
+pay[,median_pay:=as.numeric(median_pay)]
+area_code <- merge(area_code,pay,by="LAUA",all.x=TRUE)
+
+area_code_pay <- area_code[!is.na(median_pay)]
+area_code_pay <- area_code_pay[,.(mean_weeklypay=mean(median_pay),
+                                                  median_weeklypay=median(median_pay)),
+                                               by=postcode]
+
+
+anon <- merge(anon,area_code_house_price,by="postcode",all.x=TRUE)
+anon <- merge(anon,area_code_claimant,by="postcode",all.x=TRUE)
+anon <- merge(anon,area_code_qualification,by="postcode",all.x=TRUE)
+anon <- merge(anon,area_code_freemeal,by="postcode",all.x=TRUE)
+anon <- merge(anon,area_code_pay,by="postcode",all.x=TRUE)
+
+anon <- anon[,.(postcode ,anon_id,   anon_customer_number, gender, dob, name, open_date,close_date ,
+                mean_house_price, median_house_price,
+                mean_claimant, median_claimant,  mean_qualification, median_qualification, mean_freemeal,
+                median_freemeal, mean_weeklypay, median_weeklypay )]
+
+median(anon$median_house_price,na.rm = TRUE)
+# 205000
+anon_low_houseprice <- anon[median_house_price<205000]$anon_id
+anon_high_houseprice <- anon[median_house_price>=205000]$anon_id
+
+median(anon$median_claimant,na.rm = TRUE)
+# 1.3
+anon_low_claimant <- anon[median_claimant<1.3]$anon_id
+anon_high_claimant <- anon[median_claimant>=1.3]$anon_id
+
+median(anon$median_weeklypay,na.rm = TRUE)
+# 409.7
+anon_low_weeklypay <- anon[median_weeklypay<409.7]$anon_id
+anon_high_weeklypay <- anon[median_weeklypay>=409.7]$anon_id
+
+median(anon$median_qualification,na.rm = TRUE)
+# 0.2734399
+anon_low_qualification <- anon[median_qualification<0.2734399]$anon_id
+anon_high_qualification <- anon[median_qualification>=0.2734399]$anon_id
+
+
+median(anon$median_freemeal,na.rm = TRUE)
+# 17.2
+anon_low_freemeal <- anon[median_freemeal<17.2]$anon_id
+anon_high_freemeal <- anon[median_freemeal>=17.2]$anon_id
+
+```
+
+# subsample analysis
+
+```{r}
+
+setnames(anon,"anon_id","anon")
+buydaydt1 <- merge(buydaydt1, anon, by="anon",all.x=TRUE)
+buydaydt1[,high_houseprice:=ifelse(median_house_price>=205000,1,0)]
+
+## house price
+median(anon$median_house_price,na.rm = TRUE)
+# 205000
+buydaydt1[,high_houseprice:=ifelse(median_house_price>=205000,1,0)]
+
+fixed4.houseprice <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp + rank_r1day_sqr:high_houseprice + rank_r1day_in_rsp:high_houseprice + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_house_price)],keepModel = FALSE)
+
+fixed5.houseprice <- felm(buys ~   onedaybest + onedayworst + onedaybest:high_houseprice + onedayworst:high_houseprice + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_house_price)],keepModel = FALSE)
+
+fixed11.houseprice <- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp + rank_r3day_sqr:high_houseprice + rank_r3day_in_rsp:high_houseprice + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_house_price)],keepModel = FALSE)
+
+fixed12.houseprice <- felm(buys ~   threedaybest + threedayworst +  threedaybest:high_houseprice + threedayworst:high_houseprice + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_house_price)],keepModel = FALSE)
+
+
+fixed18.houseprice <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp +rank_r1week_sqr:high_houseprice + rank_r1week_in_rsp:high_houseprice + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_house_price)],keepModel = FALSE)
+
+fixed19.houseprice <- felm(buys ~   oneweekbest + oneweekworst + oneweekbest:high_houseprice + oneweekworst:high_houseprice + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_house_price)],keepModel = FALSE)
+
+
+## weekly income
+(weeklyincome <- median(anon$median_weeklypay,na.rm = TRUE))
+# 409.25
+buydaydt1[,high_weeklypay:=ifelse(median_weeklypay>=weeklyincome,1,0)]
+
+fixed4.weeklypay <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp + rank_r1day_sqr:high_weeklypay + rank_r1day_in_rsp:high_weeklypay + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_weeklypay)],keepModel = FALSE)
+
+fixed5.weeklypay <- felm(buys ~   onedaybest + onedayworst + onedaybest:high_weeklypay + onedayworst:high_weeklypay + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_weeklypay)],keepModel = FALSE)
+
+fixed11.weeklypay<- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp + rank_r3day_sqr:high_weeklypay + rank_r3day_in_rsp:high_weeklypay + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_weeklypay)],keepModel = FALSE)
+
+fixed12.weeklypay <- felm(buys ~   threedaybest + threedayworst +  threedaybest:high_weeklypay + threedayworst:high_weeklypay + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_weeklypay)],keepModel = FALSE)
+
+
+fixed18.weeklypay <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp +rank_r1week_sqr:high_weeklypay + rank_r1week_in_rsp:high_weeklypay + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_weeklypay)],keepModel = FALSE)
+
+fixed19.weeklypay <- felm(buys ~   oneweekbest + oneweekworst + oneweekbest:high_weeklypay + oneweekworst:high_weeklypay + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1[!is.na(median_weeklypay)],keepModel = FALSE)
+
+```
+
+# account level characteristics: account value, trading frequency, log-in frequency
+
+```{r}
+# calculate median account value for each person
+
+## calculate the account value for each person
+load("G:/rank/intermdiate_data/dt_portfolio/data_portfolio.RData")
+sample_anon <- unique(buydaydt1$anon)
+data <- data[anon %in% sample_anon]
+gc()
+data[,upp:=NULL]
+
+price <- fread("G:/rank/raw_data_not_confidential/310518_prices.csv")
+
+setnames(price,c("p£","up£"),c("pp","upp"))
+upp <- price[,.(date_formated,upp,Barclays_SEDOL)]
+setnames(upp,c("date_formated","Barclays_SEDOL"),c("port_date","sedol"))
+upp[,port_date:=as.Date(port_date)]
+data <- merge(data, upp, by=c("port_date","sedol"),all.x=TRUE)
+
+
+price <- price[,.(date_formated,pp,Barclays_SEDOL)]
+price[,date:=as.Date(date_formated)]
+price <- price[order(Barclays_SEDOL,date_formated)]
+price[,date_formated:=NULL]
+price[,price_1:=c(NA, pp[-.N]),by=Barclays_SEDOL]
+price[,price_2:=c(rep(NA,2), pp[1:(.N-2)]),by=Barclays_SEDOL]
+price[,price_4:=c(rep(NA,4), pp[1:(.N-4)]),by=Barclays_SEDOL]
+price[,price_6:=c(rep(NA,6), pp[1:(.N-6)]),by=Barclays_SEDOL]
+price[,return_1day:=(price_1-price_2)/price_2]
+price[,return_3day:=(price_1-price_4)/price_4]
+price[,return_1week:=(price_1-price_6)/price_6]
+setnames(price,c("date","Barclays_SEDOL"),c("port_date","sedol"))
+data <- merge(data,price,by=c("port_date","sedol"),all.x=TRUE)
+data[is.na(upp),upp:=pp]
+data[,holding_value:=net.posit*upp]
+data[,portfolio_value:=sum(holding_value),by=c("anon","port_date")]
+data_value <- data[,.SD[1],by=c("anon","port_date")]
+data_value <- data_value[!is.na(portfolio_value)]
+
+## calculate median account value for each person
+account_median_value <- data_value[,.(median_value=median(portfolio_value)),by=anon]
+
+## calculate initial account value for each person
+data_value <- data_value[order(anon,port_date)]
+account_initial_value <- data_value[,.SD[1],by=anon]
+account_initial_value <- account_initial_value[,.(anon,portfolio_value)]
+setnames(account_initial_value,"portfolio_value","initial_value")
+
+# calculate trading frequency for each person
+
+
+
+######################
+#get buy/sell data
+######################
+transaction <-fread("F:/stock split/merged_from_python.csv")
+setnames(transaction, c("V1","V2","V3","V4","V5","V6","V7","V8","V9","V10"),
+         c("date","transaction_time","transaction_type","narative","sedol",
+           "cost","quantity","unit_price","commission","account"))
+
+split <- fread("F:/stock split/intermediate_data/split.csv")
+transaction$date <- as.Date(transaction$date)
+split$datadate <- as.Date(split$datadate,format="%d/%m/%Y") # split data from compustat
+up <- fread("F:/stock split/nonconfidential data/up.csv")
+up <- up[,Code:=NULL]
+up <- up[,NAME:=NULL] # unadjusted price data
+static <- fread("F:/stock split/intermediate_data/260118_isins_sedols_recovered_static.csv")
+static <- static[,c("Barclays_SEDOL","DS_STOCK_TYPE","DS_CURRENCY_CODE")] #ds_static_data
+setnames(transaction,"sedol","Barclays_SEDOL")
+transaction <- merge(transaction, static,by="Barclays_SEDOL",all.x = TRUE)
+transaction <- transaction[order(account,date)]
+#Hiro's way to identify automatic trading (for buying)
+transaction_buy <- transaction[narative=="BUY"] # all buy stransactions
+transaction_buy <- transaction_buy[DS_STOCK_TYPE == "EQ"|
+                                      Barclays_SEDOL %in% split$sedol1|
+                                      Barclays_SEDOL %in% split$sedol2|
+                                      Barclays_SEDOL %in% split$sedol3]
+transaction_buy <- transaction_buy[DS_CURRENCY_CODE == "GBP"|
+                                      Barclays_SEDOL %in% split$sedol1|
+                                      Barclays_SEDOL %in% split$sedol2|
+                                      Barclays_SEDOL %in% split$sedol3]
+check <- transaction_buy[DS_CURRENCY_CODE == "GBP"|
+                                      Barclays_SEDOL %in% split$sedol1|
+                                      Barclays_SEDOL %in% split$sedol2|
+                                      Barclays_SEDOL %in% split$sedol3]
+automatic_buy <- transaction_buy[,.N,by=c("Barclays_SEDOL","date","unit_price","transaction_time"
+                                          )][order(-N)]
+ex1 <- automatic_buy[N>=124 & transaction_time>810 & transaction_time<1630]
+ex3 <- automatic_buy[transaction_time<800 | transaction_time>1640]
+ex1 <- rbind(ex1,ex3)
+ex1 <- ex1[,N:=NULL]                     
+ex1 <- ex1[,mark:=1]
+#Hiro's way to identify automatic trading (for selling)
+transaction_sell <- transaction[narative=="SELL"] # all buy stransactions
+transaction_sell <- transaction_sell[DS_STOCK_TYPE == "EQ"|
+                                      Barclays_SEDOL %in% split$sedol1|
+                                      Barclays_SEDOL %in% split$sedol2|
+                                      Barclays_SEDOL %in% split$sedol3]
+transaction_sell <- transaction_sell[DS_CURRENCY_CODE == "GBP"|
+                                      Barclays_SEDOL %in% split$sedol1|
+                                      Barclays_SEDOL %in% split$sedol2|
+                                      Barclays_SEDOL %in% split$sedol3]
+automatic_sell <- transaction_sell[,.N,by=c("Barclays_SEDOL","date","unit_price",
+                                   "transaction_time")][order(-N)]
+ex2 <- automatic_sell[N>=29 & transaction_time>810 & transaction_time<1630]
+ex4 <- automatic_sell[transaction_time<800 | transaction_time>1640]
+ex2 <- rbind(ex2,ex4)
+ex2 <- ex2[,N:=NULL]                     
+ex2 <- ex2[,mark:=1]
+
+#(finally! delete those automatic trades! for buy)
+transaction_buy <- merge(transaction_buy,ex1,by=c("Barclays_SEDOL","date","unit_price","transaction_time"),all.x=TRUE)
+sum(is.na(transaction_buy$mark)==FALSE)/length(transaction_buy$mark)
+transaction_buy <- transaction_buy[is.na(mark)==TRUE]
+transaction_buy <- transaction_buy[,mark:=NULL]
+#(finally! delete those automatic trades! for sell)
+transaction_sell <- merge(transaction_sell,ex2,by=c("Barclays_SEDOL","date","unit_price","transaction_time"),all.x=TRUE)
+sum(is.na(transaction_sell$mark)==FALSE)/length(transaction_sell$mark)
+transaction_sell <- transaction_sell[is.na(mark)==TRUE]
+transaction_sell <- transaction_sell[,mark:=NULL]
+######################
+######################
+######################
+
+extract_anon_id <- function(x)
+{
+unlist(strsplit(unlist(strsplit(x, split="_"))[2] , split=".c"))[1]
+}
+transaction_buy[,anon:=unlist(lapply(account, extract_anon_id))]
+transaction_buy[,anon:=as.numeric(anon)]
+transaction_sell[,anon:=unlist(lapply(account, extract_anon_id))]
+transaction_sell[,anon:=as.numeric(anon)]
+
+## trading times
+
+buy_times <- transaction_buy[,.N,by=anon]
+setnames(buy_times,"N","num.buys")
+sell_times <- transaction_sell[,.N,by=anon]
+setnames(sell_times,"N","num.sells")
+anon <- fread("D:/raw_data_September_2016/warwick_version--portfolios_201204-201604--id_mapping--with_customer_level_attributes_v2.csv")
+anon <- anon[anon_id %in% sample_anon]
+setnames(anon,"anon_id","anon")
+anon <- merge(anon, buy_times, by="anon",all.x=TRUE)
+anon <- merge(anon, sell_times, by="anon",all.x=TRUE)
+
+
+## trading value
+
+buy_value <- transaction_buy[,.(buy_value=sum(cost)),by=anon]
+sell_value <- transaction_sell[,.(sell_value=sum(cost)),by=anon]
+anon <- merge(anon, buy_value, by="anon",all.x=TRUE)
+anon <- merge(anon, sell_value, by="anon",all.x=TRUE)
+
+
+# calculate log-in frequency for each person
+
+log_in <- fread("D:/wa/merged_logins.csv")
+log_in[,date:=substring(V1,1,10)]
+log_in[,date:=as.Date(date,format="%d/%m/%Y")]
+log_in[,anon_inter:=substring(V3,6,nchar(V3))]
+log_in[,anon:=substring(anon_inter,1,(nchar(anon_inter)-4))]
+log_in[,anon:=as.numeric(anon)]
+setnames(log_in, c("V2","date"), c("log_in_times","port_date"))
+log_in_freq <- log_in[,.(log_in_freq=sum(log_in_times)),by=anon]
+log_in_days <- log_in[,.(log_in_days=.N),by=anon]
+anon <- merge(anon, log_in_freq, by="anon",all.x=TRUE)
+anon <- merge(anon, log_in_days, by="anon",all.x=TRUE)
+
+anon <- merge(anon, account_median_value, by="anon",all.x=TRUE)
+anon <- merge(anon, account_initial_value, by="anon",all.x=TRUE)
+save(anon,file="anon_info.RData")
+```
+
+```{r}
+rm(anon)
+load(file="anon_info.RData")
+anon[,open_date:=as.Date(open_date)]
+anon[close_date=="",close_date:="2016-08-31"]
+anon[,close_date:=as.Date(close_date)]
+anon[,account_length:=as.numeric(close_date-open_date)]
+anon[is.na(num.sells),num.sells:=0]
+anon[,num.trades:=num.buys+num.sells]
+anon[,num.trades.freq:=num.trades/account_length]
+anon[,log_in_days_freq:=log_in_days/account_length]
+anon <- anon[order(-account_length)]
+anon <- anon[,.SD[1],by=anon]
+anon <- anon[,.(anon,median_value,initial_value,account_length,num.trades,num.trades.freq,log_in_days_freq)]
+median(anon$median_value)
+# 17676.56
+median(anon$initial_value)
+# 4105.487
+median(anon$num.trades.freq)
+# 0.03341587
+median(anon$log_in_days_freq)
+# 0.2459341
+
+```
+
+```{r}
+buydaydt1 <- merge(buydaydt1, anon, by="anon", all.x=TRUE)
+
+## initial value
+(initialvalue <- median(anon$initial_value,na.rm = TRUE))
+# 4105.487
+buydaydt1[,high_initialvalue:=ifelse(initial_value>=initialvalue,1,0)]
+
+fixed4.initialvalue <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp + rank_r1day_sqr:high_initialvalue + rank_r1day_in_rsp:high_initialvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed5.initialvalue <- felm(buys ~   onedaybest + onedayworst + onedaybest:high_initialvalue + onedayworst:high_initialvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed11.initialvalue<- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp + rank_r3day_sqr:high_initialvalue + rank_r3day_in_rsp:high_initialvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed12.initialvalue<- felm(buys ~   threedaybest + threedayworst +  threedaybest:high_initialvalue + threedayworst:high_initialvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+fixed18.initialvalue <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp +rank_r1week_sqr:high_initialvalue + rank_r1week_in_rsp:high_initialvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed19.initialvalue <- felm(buys ~   oneweekbest + oneweekworst + oneweekbest:high_initialvalue + oneweekworst:high_initialvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+
+## median_value
+(medianvalue <- median(anon$median_value,na.rm = TRUE))
+# 17676.56
+buydaydt1[,high_medianvalue:=ifelse(median_value>=medianvalue,1,0)]
+
+fixed4.medianvalue <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp + rank_r1day_sqr:high_medianvalue + rank_r1day_in_rsp:high_medianvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed5.medianvalue <- felm(buys ~   onedaybest + onedayworst + onedaybest:high_medianvalue + onedayworst:high_medianvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed11.medianvalue<- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp + rank_r3day_sqr:high_medianvalue + rank_r3day_in_rsp:high_medianvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed12.medianvalue<- felm(buys ~   threedaybest + threedayworst +  threedaybest:high_medianvalue + threedayworst:high_medianvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+fixed18.medianvalue <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp +rank_r1week_sqr:high_medianvalue + rank_r1week_in_rsp:high_medianvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed19.medianvalue <- felm(buys ~   oneweekbest + oneweekworst + oneweekbest:high_medianvalue + oneweekworst:high_medianvalue + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+
+## num.trades.freq
+(tradesfreq <- median(anon$num.trades.freq,na.rm = TRUE))
+# 0.03341587
+buydaydt1[,high_tradesfreq:=ifelse(num.trades.freq>=tradesfreq,1,0)]
+
+fixed4.tradesfreq <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp + rank_r1day_sqr:high_tradesfreq + rank_r1day_in_rsp:high_tradesfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed5.tradesfreq <- felm(buys ~   onedaybest + onedayworst + onedaybest:high_tradesfreq + onedayworst:high_tradesfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed11.tradesfreq<- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp + rank_r3day_sqr:high_tradesfreq + rank_r3day_in_rsp:high_tradesfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed12.tradesfreq<- felm(buys ~   threedaybest + threedayworst +  threedaybest:high_tradesfreq + threedayworst:high_tradesfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+fixed18.tradesfreq <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp +rank_r1week_sqr:high_tradesfreq + rank_r1week_in_rsp:high_tradesfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed19.tradesfreq <- felm(buys ~   oneweekbest + oneweekworst + oneweekbest:high_tradesfreq + oneweekworst:high_tradesfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+## num.login.freq
+(loginfreq <- median(anon$log_in_days_freq,na.rm = TRUE))
+# 0.2459341
+buydaydt1[,high_loginfreq:=ifelse(log_in_days_freq>=loginfreq,1,0)]
+
+fixed4.loginfreq <- felm(buys ~   rank_r1day_sqr + rank_r1day_in_rsp + rank_r1day_sqr:high_loginfreq + rank_r1day_in_rsp:high_loginfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed5.loginfreq <- felm(buys ~   onedaybest + onedayworst + onedaybest:high_loginfreq + onedayworst:high_loginfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed11.loginfreq<- felm(buys ~   rank_r3day_sqr + rank_r3day_in_rsp + rank_r3day_sqr:high_loginfreq + rank_r3day_in_rsp:high_loginfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed12.loginfreq<- felm(buys ~   threedaybest + threedayworst +  threedaybest:high_loginfreq + threedayworst:high_loginfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_3day_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+fixed18.loginfreq <- felm(buys ~   rank_r1week_sqr + rank_r1week_in_rsp +rank_r1week_sqr:high_loginfreq + rank_r1week_in_rsp:high_loginfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+fixed19.loginfreq <- felm(buys ~   oneweekbest + oneweekworst + oneweekbest:high_loginfreq + oneweekworst:high_loginfreq + portfolio_return +   return_since_purchase + rank_rsp_to_rsp  + holding_day_sqrt +  return_since_purchase:holding_day_sqrt |anon +sedol_date + return_1week_level_buy_day |0| anon+port_date, data=buydaydt1,keepModel = FALSE)
+
+
+
+```
+
+
+
+
+
+
+
+
+
