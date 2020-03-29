@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.2)  10 MAR 2020 11:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.2)  29 MAR 2020 18:02
 entering extended mode
 **./short_paper.tex
 (short_paper.tex
@@ -459,32 +459,50 @@ Package: amsthm 2017/10/31 v2.20.4
 \thm@headsep=\skip57
 \dth@everypar=\toks38
 )
+("C:\Program Files\MiKTeX 2.9\tex/latex/caption\caption.sty"
+Package: caption 2020/01/03 v3.4h Customizing captions (AR)
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/caption\caption3.sty"
+Package: caption3 2020/01/03 v1.8h caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 61.
+\captionmargin=\dimen198
+\captionmargin@=\dimen199
+\captionwidth=\dimen256
+\caption@tempdima=\dimen257
+\caption@indent=\dimen258
+\caption@parindent=\dimen259
+\caption@hangindent=\dimen260
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count279
+\c@continuedfloat=\count280
+)
 ("C:\Program Files\MiKTeX 2.9\tex/latex/setspace\setspace.sty"
 Package: setspace 2011/12/19 v6.7a set line spacing
 )
 ("C:\Program Files\MiKTeX 2.9\tex/latex/booktabs\booktabs.sty"
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen198
-\lightrulewidth=\dimen199
-\cmidrulewidth=\dimen256
-\belowrulesep=\dimen257
-\belowbottomsep=\dimen258
-\aboverulesep=\dimen259
-\abovetopsep=\dimen260
-\cmidrulesep=\dimen261
-\cmidrulekern=\dimen262
-\defaultaddspace=\dimen263
-\@cmidla=\count279
-\@cmidlb=\count280
-\@aboverulesep=\dimen264
-\@belowrulesep=\dimen265
-\@thisruleclass=\count281
-\@lastruleclass=\count282
-\@thisrulewidth=\dimen266
+\heavyrulewidth=\dimen261
+\lightrulewidth=\dimen262
+\cmidrulewidth=\dimen263
+\belowrulesep=\dimen264
+\belowbottomsep=\dimen265
+\aboverulesep=\dimen266
+\abovetopsep=\dimen267
+\cmidrulesep=\dimen268
+\cmidrulekern=\dimen269
+\defaultaddspace=\dimen270
+\@cmidla=\count281
+\@cmidlb=\count282
+\@aboverulesep=\dimen271
+\@belowrulesep=\dimen272
+\@thisruleclass=\count283
+\@lastruleclass=\count284
+\@thisrulewidth=\dimen273
 )
 ("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\rotating.sty"
 Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
-\c@r@tfl@t=\count283
+\c@r@tfl@t=\count285
 \rotFPtop=\skip58
 \rotFPbot=\skip59
 \rot@float@box=\box58
@@ -512,7 +530,7 @@ Package pdftexcmds Info: \pdfdraftmode found.
 )
 ("C:\Program Files\MiKTeX 2.9\tex/latex/etoolbox\etoolbox.sty"
 Package: etoolbox 2019/09/21 v2.5h e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count284
+\etb@tempcnta=\count286
 )
 ("C:\Program Files\MiKTeX 2.9\tex/latex/kvoptions\kvoptions.sty"
 Package: kvoptions 2019/11/29 v3.13 Key value format for package options (HO)
@@ -522,7 +540,7 @@ Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
 ))
 ("C:\Program Files\MiKTeX 2.9\tex/latex/logreq\logreq.sty"
 Package: logreq 2010/08/04 v1.0 xml request logger
-\lrq@indent=\count285
+\lrq@indent=\count287
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/logreq\logreq.def"
 File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
@@ -531,47 +549,47 @@ File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
-\c@tabx@nest=\count286
-\c@listtotal=\count287
-\c@listcount=\count288
-\c@liststart=\count289
-\c@liststop=\count290
-\c@citecount=\count291
-\c@citetotal=\count292
-\c@multicitecount=\count293
-\c@multicitetotal=\count294
-\c@instcount=\count295
-\c@maxnames=\count296
-\c@minnames=\count297
-\c@maxitems=\count298
-\c@minitems=\count299
-\c@citecounter=\count300
-\c@maxcitecounter=\count301
-\c@savedcitecounter=\count302
-\c@uniquelist=\count303
-\c@uniquename=\count304
-\c@refsection=\count305
-\c@refsegment=\count306
-\c@maxextratitle=\count307
-\c@maxextratitleyear=\count308
-\c@maxextraname=\count309
-\c@maxextradate=\count310
-\c@maxextraalpha=\count311
-\c@abbrvpenalty=\count312
-\c@highnamepenalty=\count313
-\c@lownamepenalty=\count314
-\c@maxparens=\count315
-\c@parenlevel=\count316
-\blx@tempcnta=\count317
-\blx@tempcntb=\count318
-\blx@tempcntc=\count319
-\blx@maxsection=\count320
-\blx@maxsegment@0=\count321
-\blx@notetype=\count322
-\blx@parenlevel@text=\count323
-\blx@parenlevel@foot=\count324
-\blx@sectionciteorder@0=\count325
-\blx@entrysetcounter=\count326
+\c@tabx@nest=\count288
+\c@listtotal=\count289
+\c@listcount=\count290
+\c@liststart=\count291
+\c@liststop=\count292
+\c@citecount=\count293
+\c@citetotal=\count294
+\c@multicitecount=\count295
+\c@multicitetotal=\count296
+\c@instcount=\count297
+\c@maxnames=\count298
+\c@minnames=\count299
+\c@maxitems=\count300
+\c@minitems=\count301
+\c@citecounter=\count302
+\c@maxcitecounter=\count303
+\c@savedcitecounter=\count304
+\c@uniquelist=\count305
+\c@uniquename=\count306
+\c@refsection=\count307
+\c@refsegment=\count308
+\c@maxextratitle=\count309
+\c@maxextratitleyear=\count310
+\c@maxextraname=\count311
+\c@maxextradate=\count312
+\c@maxextraalpha=\count313
+\c@abbrvpenalty=\count314
+\c@highnamepenalty=\count315
+\c@lownamepenalty=\count316
+\c@maxparens=\count317
+\c@parenlevel=\count318
+\blx@tempcnta=\count319
+\blx@tempcntb=\count320
+\blx@tempcntc=\count321
+\blx@maxsection=\count322
+\blx@maxsegment@0=\count323
+\blx@notetype=\count324
+\blx@parenlevel@text=\count325
+\blx@parenlevel@foot=\count326
+\blx@sectionciteorder@0=\count327
+\blx@entrysetcounter=\count328
 \labelnumberwidth=\skip60
 \labelalphawidth=\skip61
 \biblabelsep=\skip62
@@ -583,9 +601,9 @@ Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 \blx@bcfin=\read3
 \blx@bcfout=\write4
 \blx@langwohyphens=\language78
-\c@mincomprange=\count327
-\c@maxcomprange=\count328
-\c@mincompwidth=\count329
+\c@mincomprange=\count329
+\c@maxcomprange=\count330
+\c@mincompwidth=\count331
 Package biblatex Info: Trying to load biblatex default data model...
 Package biblatex Info: ... file 'blx-dm.def' found.
 
@@ -596,74 +614,74 @@ Package biblatex Info: Trying to load biblatex style data model...
 Package biblatex Info: ... file 'authoryear.dbx' not found.
 Package biblatex Info: Trying to load biblatex custom data model...
 Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
-\c@afterword=\count330
-\c@savedafterword=\count331
-\c@annotator=\count332
-\c@savedannotator=\count333
-\c@author=\count334
-\c@savedauthor=\count335
-\c@bookauthor=\count336
-\c@savedbookauthor=\count337
-\c@commentator=\count338
-\c@savedcommentator=\count339
-\c@editor=\count340
-\c@savededitor=\count341
-\c@editora=\count342
-\c@savededitora=\count343
-\c@editorb=\count344
-\c@savededitorb=\count345
-\c@editorc=\count346
-\c@savededitorc=\count347
-\c@foreword=\count348
-\c@savedforeword=\count349
-\c@holder=\count350
-\c@savedholder=\count351
-\c@introduction=\count352
-\c@savedintroduction=\count353
-\c@namea=\count354
-\c@savednamea=\count355
-\c@nameb=\count356
-\c@savednameb=\count357
-\c@namec=\count358
-\c@savednamec=\count359
-\c@translator=\count360
-\c@savedtranslator=\count361
-\c@shortauthor=\count362
-\c@savedshortauthor=\count363
-\c@shorteditor=\count364
-\c@savedshorteditor=\count365
-\c@labelname=\count366
-\c@savedlabelname=\count367
-\c@institution=\count368
-\c@savedinstitution=\count369
-\c@lista=\count370
-\c@savedlista=\count371
-\c@listb=\count372
-\c@savedlistb=\count373
-\c@listc=\count374
-\c@savedlistc=\count375
-\c@listd=\count376
-\c@savedlistd=\count377
-\c@liste=\count378
-\c@savedliste=\count379
-\c@listf=\count380
-\c@savedlistf=\count381
-\c@location=\count382
-\c@savedlocation=\count383
-\c@organization=\count384
-\c@savedorganization=\count385
-\c@origlocation=\count386
-\c@savedoriglocation=\count387
-\c@origpublisher=\count388
-\c@savedorigpublisher=\count389
-\c@publisher=\count390
-\c@savedpublisher=\count391
-\c@language=\count392
-\c@savedlanguage=\count393
-\c@origlanguage=\count394
-\c@savedoriglanguage=\count395
-\c@pageref=\count396
-\c@savedpageref=\count397
+\c@afterword=\count332
+\c@savedafterword=\count333
+\c@annotator=\count334
+\c@savedannotator=\count335
+\c@author=\count336
+\c@savedauthor=\count337
+\c@bookauthor=\count338
+\c@savedbookauthor=\count339
+\c@commentator=\count340
+\c@savedcommentator=\count341
+\c@editor=\count342
+\c@savededitor=\count343
+\c@editora=\count344
+\c@savededitora=\count345
+\c@editorb=\count346
+\c@savededitorb=\count347
+\c@editorc=\count348
+\c@savededitorc=\count349
+\c@foreword=\count350
+\c@savedforeword=\count351
+\c@holder=\count352
+\c@savedholder=\count353
+\c@introduction=\count354
+\c@savedintroduction=\count355
+\c@namea=\count356
+\c@savednamea=\count357
+\c@nameb=\count358
+\c@savednameb=\count359
+\c@namec=\count360
+\c@savednamec=\count361
+\c@translator=\count362
+\c@savedtranslator=\count363
+\c@shortauthor=\count364
+\c@savedshortauthor=\count365
+\c@shorteditor=\count366
+\c@savedshorteditor=\count367
+\c@labelname=\count368
+\c@savedlabelname=\count369
+\c@institution=\count370
+\c@savedinstitution=\count371
+\c@lista=\count372
+\c@savedlista=\count373
+\c@listb=\count374
+\c@savedlistb=\count375
+\c@listc=\count376
+\c@savedlistc=\count377
+\c@listd=\count378
+\c@savedlistd=\count379
+\c@liste=\count380
+\c@savedliste=\count381
+\c@listf=\count382
+\c@savedlistf=\count383
+\c@location=\count384
+\c@savedlocation=\count385
+\c@organization=\count386
+\c@savedorganization=\count387
+\c@origlocation=\count388
+\c@savedoriglocation=\count389
+\c@origpublisher=\count390
+\c@savedorigpublisher=\count391
+\c@publisher=\count392
+\c@savedpublisher=\count393
+\c@language=\count394
+\c@savedlanguage=\count395
+\c@origlanguage=\count396
+\c@savedoriglanguage=\count397
+\c@pageref=\count398
+\c@savedpageref=\count399
 \shorthandwidth=\skip68
 \shortjournalwidth=\skip69
 \shortserieswidth=\skip70
@@ -699,19 +717,19 @@ Package biblatex Info: Trying to load generic definitions...
 Package biblatex Info: ... file 'biblatex.def' found.
  ("C:\Program Files\MiKTeX 2.9\tex/latex/biblatex\biblatex.def"
 File: biblatex.def 2019/12/01 v3.14 biblatex compatibility (PK/MW)
-\c@textcitecount=\count398
-\c@textcitetotal=\count399
-\c@textcitemaxnames=\count400
-\c@biburlbigbreakpenalty=\count401
-\c@biburlbreakpenalty=\count402
-\c@biburlnumpenalty=\count403
-\c@biburlucpenalty=\count404
-\c@biburllcpenalty=\count405
+\c@textcitecount=\count400
+\c@textcitetotal=\count401
+\c@textcitemaxnames=\count402
+\c@biburlbigbreakpenalty=\count403
+\c@biburlbreakpenalty=\count404
+\c@biburlnumpenalty=\count405
+\c@biburlucpenalty=\count406
+\c@biburllcpenalty=\count407
 \biburlbigskip=\muskip18
 \biburlnumskip=\muskip19
 \biburlucskip=\muskip20
 \biburllcskip=\muskip21
-\c@smartand=\count406
+\c@smartand=\count408
 )
 Package biblatex Info: Trying to load natbib compatibility...
 Package biblatex Info: ... file 'blx-natbib.def' found.
@@ -731,8 +749,8 @@ Package biblatex Info: ... file 'standard.bbx' found.
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/biblatex/bbx\standard.bbx"
 File: standard.bbx 2019/12/01 v3.14 biblatex bibliography style (PK/MW)
-\c@bbx:relatedcount=\count407
-\c@bbx:relatedtotal=\count408
+\c@bbx:relatedcount=\count409
+\c@bbx:relatedtotal=\count410
 ))
 Package biblatex Info: Trying to load citation style 'authoryear'...
 Package biblatex Info: ... file 'authoryear.cbx' found.
@@ -759,31 +777,31 @@ Package: geometry 2020/01/02 v5.9 Page Geometry
 ("C:\Program Files\MiKTeX 2.9\tex/generic/iftex\ifvtex.sty"
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 )
-\Gm@cnth=\count409
-\Gm@cntv=\count410
-\c@Gm@tempcnt=\count411
-\Gm@bindingoffset=\dimen267
-\Gm@wd@mp=\dimen268
-\Gm@odd@mp=\dimen269
-\Gm@even@mp=\dimen270
-\Gm@layoutwidth=\dimen271
-\Gm@layoutheight=\dimen272
-\Gm@layouthoffset=\dimen273
-\Gm@layoutvoffset=\dimen274
+\Gm@cnth=\count411
+\Gm@cntv=\count412
+\c@Gm@tempcnt=\count413
+\Gm@bindingoffset=\dimen274
+\Gm@wd@mp=\dimen275
+\Gm@odd@mp=\dimen276
+\Gm@even@mp=\dimen277
+\Gm@layoutwidth=\dimen278
+\Gm@layoutheight=\dimen279
+\Gm@layouthoffset=\dimen280
+\Gm@layoutvoffset=\dimen281
 \Gm@dimlist=\toks40
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/geometry\geometry.cfg"))
-\@quotelevel=\count412
-\@quotereset=\count413
+\@quotelevel=\count414
+\@quotereset=\count415
 
 
 Package biblatex Warning: Conflicting options.
 (biblatex)                '<namepart>inits' conflicts with 'uniquename=full'.
-(biblatex)                Setting 'uniquename=init' on input line 27.
+(biblatex)                Setting 'uniquename=init' on input line 32.
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/l3backend\l3backend-pdfmode.def"
 File: l3backend-pdfmode.def 2020-02-03 L3 backend support: PDF mode
-\l__kernel_color_stack_int=\count414
+\l__kernel_color_stack_int=\count416
 \l__pdf_internal_box=\box59
 )
 (short_paper.aux
@@ -808,32 +826,32 @@ LaTeX Warning: Label `' multiply defined.
 )
 \openout1 = `short_paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
  ("C:\Program Files\MiKTeX 2.9\tex/context/base/mkii\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count415
-\scratchdimen=\dimen275
+\scratchcounter=\count417
+\scratchdimen=\dimen282
 \scratchbox=\box60
-\nofMPsegments=\count416
-\nofMParguments=\count417
+\nofMPsegments=\count418
+\nofMParguments=\count419
 \everyMPshowfont=\toks41
-\MPscratchCnt=\count418
-\MPscratchDim=\dimen276
-\MPnumerator=\count419
-\makeMPintoPDFobject=\count420
+\MPscratchCnt=\count420
+\MPscratchDim=\dimen283
+\MPnumerator=\count421
+\makeMPintoPDFobject=\count422
 \everyMPtoPDFconversion=\toks42
 ) ("C:\Program Files\MiKTeX 2.9\tex/latex/epstopdf-pkg\epstopdf-base.sty"
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -845,8 +863,11 @@ ABD: EveryShipout initializing macros
 Package todonotes Warning: The length marginparwidth is less than 2cm and will 
 most likely cause issues with the appearance of inserted todonotes. The issue c
 an be solved by adding a line like \setlength {\marginparwidth }{2cm} prior to 
-loading the todonotes package. on input line 27.
+loading the todonotes package. on input line 32.
 
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: rotating package is loaded.
+Package caption Info: End \AtBeginDocument code.
 Package biblatex Info: Trying to load language 'english'...
 Package biblatex Info: ... file 'english.lbx' found.
 ("C:\Program Files\MiKTeX 2.9\tex/latex/biblatex/lbx\english.lbx"
@@ -864,8 +885,8 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'short_paper.bbl' found.
 
 (short_paper.bbl)
-Package biblatex Info: Reference section=0 on input line 27.
-Package biblatex Info: Reference segment=0 on input line 27.
+Package biblatex Info: Reference section=0 on input line 32.
+Package biblatex Info: Reference segment=0 on input line 32.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -901,12 +922,12 @@ Package biblatex Info: Reference segment=0 on input line 27.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 28.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 33.
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 28.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 33.
 
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsb.fd"
@@ -918,14 +939,14 @@ LaTeX Warning: No \author given.
 <figure_probtopup_1dayreturn.png, id=28, 289.08pt x 289.08pt>
 File: figure_probtopup_1dayreturn.png Graphic file (type png)
 <use figure_probtopup_1dayreturn.png>
-Package pdftex.def Info: figure_probtopup_1dayreturn.png  used on input line 36
+Package pdftex.def Info: figure_probtopup_1dayreturn.png  used on input line 41
 .
 (pdftex.def)             Requested size: 202.35461pt x 202.35461pt.
 <figure_probtopup_1dayreturnrank.png, id=29, 289.08pt x 289.08pt>
 File: figure_probtopup_1dayreturnrank.png Graphic file (type png)
 <use figure_probtopup_1dayreturnrank.png>
 Package pdftex.def Info: figure_probtopup_1dayreturnrank.png  used on input lin
-e 42.
+e 48.
 (pdftex.def)             Requested size: 202.35461pt x 202.35461pt.
 [1
 
@@ -937,35 +958,49 @@ Overfull \hbox (18.15063pt too wide) in paragraph at lines 7--22
  []
 
 )
-Overfull \hbox (2.85236pt too wide) in paragraph at lines 60--61
+Overfull \hbox (2.85236pt too wide) in paragraph at lines 66--67
 []\OT1/cmr/m/n/12 Daniel Stew-art Se-cu-ri-ties in-creased from \TS1/cmr/m/n/12
  £\OT1/cmr/m/n/12 0.00200 to \TS1/cmr/m/n/12 £\OT1/cmr/m/n/12 0.01700 (in-creas
 ed by $750%$) from 30/March/2015
  []
 
-[2] (table_reg_topup.tex) (table_reg_topup2.tex) (table_reg_houseprice.tex)
-Overfull \hbox (32.1657pt too wide) in paragraph at lines 75--78
+[2] (table_reg_topup.tex) (table_reg_topup2.tex) (table_reg_subsample_n1.tex)
+Overfull \hbox (34.50772pt too wide) in paragraph at lines 84--87
  [][] 
  []
 
-[3] [4] [5] (table_reg_first_buy_buyday_30day.tex)
+(table_reg_subsample_n3.tex)
+Overfull \hbox (36.72995pt too wide) in paragraph at lines 94--97
+ [][] 
+ []
+
+(table_reg_subsample_n5.tex)
+Overfull \hbox (34.50772pt too wide) in paragraph at lines 104--107
+ [][] 
+ []
+
+[3] [4] [5] [6] [7] (table_reg_first_buy_buyday_30day.tex)
 (table_reg_first_buy_buyday_60day.tex) (table_reg_first_buy_buyday_90day.tex)
-[6] [7] [8] [9] (short_paper.aux)
+[8] [9] [10] [11] (short_paper.aux)
 
 LaTeX Warning: There were multiply-defined labels.
+
+
+Package biblatex Warning: Please rerun LaTeX.
+(biblatex)                Page breaks have changed.
 
 Package logreq Info: Writing requests to 'short_paper.run.xml'.
 \openout1 = `short_paper.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 21438 strings out of 481556
- 416834 string characters out of 2923629
- 1028545 words of memory out of 3000000
- 36305 multiletter control sequences out of 15000+200000
- 543372 words of font info for 66 fonts, out of 3000000 for 9000
+ 22555 strings out of 481556
+ 437175 string characters out of 2923629
+ 1088826 words of memory out of 3000000
+ 37408 multiletter control sequences out of 15000+200000
+ 543076 words of font info for 65 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 68i,18n,83p,826b,1396s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 68i,18n,96p,826b,1396s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\phd17jg\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi60
 0\tcrm1200.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx1
 2.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C
@@ -973,13 +1008,15 @@ Here is how much of TeX's memory you used:
 m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/M
 iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9
 /fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9/fonts/ty
-pe1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
-/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfont
-s/cm/cmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti
-10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on short_paper.pdf (9 pages, 196857 bytes).
+pe1/public/amsfonts/cm/cmr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/
+cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7
+.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/
+Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program 
+Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on short_paper.pdf (11 pages, 218542 bytes).
 PDF statistics:
- 112 PDF objects out of 1000 (max. 8388607)
+ 126 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  119 words of extra memory for PDF output out of 10000 (max. 10000000)
 

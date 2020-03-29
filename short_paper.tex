@@ -8,6 +8,11 @@
 \usepackage{todonotes}
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{graphicx}                           % Package to allow inclusion of graphics
+
+\usepackage{caption}        
+\captionsetup{justification   = raggedright,
+	singlelinecheck = false, labelfont={bf},labelformat={default},labelsep=period} % make the caption left aligned, make the "figure" bold
+
 % line spacing
 \usepackage[onehalfspacing]{setspace}
 \usepackage{booktabs}
@@ -35,13 +40,14 @@
 \begin{figure}[h]
 	\includegraphics[scale=0.7]{figure_probtopup_1dayreturn}
 	\centering
-	\caption{Probability of topping up on each percentile of 1-day return}
+	\caption[topup_return_1day]%
+	{\textbf{Probability of topping up on each percentile of 1-day return} \par \small Long Description}
 \end{figure}
 
 \begin{figure}[h]
 	\includegraphics[scale=0.7]{figure_probtopup_1dayreturnrank}
 	\centering
-	\caption{Probability of topping up on 1-day return rank}
+	\caption{Probability of topping up on rank 1-day return}
 \end{figure}
 
 
@@ -68,17 +74,37 @@ Daniel Stewart Securities increased from \pounds0.00200 to \pounds0.01700 (incre
 
 \input{table_reg_topup2.tex}
 
-\begin{sidewaystable}
-	\centering
-	\small
-	\caption{Subsample analysis: break by median house price}
-	\begin{tabular}{ll}
-\input{table_reg_houseprice.tex}
-	\end{tabular}
-\end{sidewaystable}
+
 	
 
+\begin{sidewaystable}
+	\centering
+	\footnotesize
+	\caption{Subsample analysis: break by median house price}
+	\begin{tabular}{ll}
+		\input{table_reg_subsample_n1.tex}
+	\end{tabular}
+\end{sidewaystable}
 
+
+\begin{sidewaystable}
+	\centering
+	\footnotesize
+	\caption{Subsample analysis: break by median house price}
+	\begin{tabular}{ll}
+		\input{table_reg_subsample_n3.tex}
+	\end{tabular}
+\end{sidewaystable}
+
+
+\begin{sidewaystable}
+	\centering
+	\footnotesize
+	\caption{Subsample analysis: break by median house price}
+	\begin{tabular}{ll}
+		\input{table_reg_subsample_n5.tex}
+	\end{tabular}
+\end{sidewaystable}
 
 
 \newpage
